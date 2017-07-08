@@ -96,7 +96,7 @@ def es_punto(punto):
                 for coordenada in coordenadas))
 
 
-def comprobar_punto_en_circulo(punto, centro, radio):
+def es_punto_en_circulo(punto, centro, radio):
     """
     Función que comprueba si unas coordenadas están dentro de un círculo.
 
@@ -138,7 +138,7 @@ def main():
         if punto is None:
             break
 
-        esta_dentro = comprobar_punto_en_circulo(punto, centro, radio)
+        esta_dentro = es_punto_en_circulo(punto, centro, radio)
         print("Está dentro" if esta_dentro else "No está dentro")
 
 
