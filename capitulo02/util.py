@@ -35,7 +35,7 @@ def obtener_dato(mensaje, evaluar=None, comprobar=None, fin=None):
             caso de evaluarse) es correcto. Si es None, no se realiza ninguna
             comprobación del dato.
             Debe devolver True si el dato es correcto o False en caso contrario.
-        fin: cadena o lista de cadenas de finalización que interrumpe la lectura
+        fin: cadena o tupla de cadenas de finalización que interrumpe la lectura
             por teclado. Si es None no se realiza ninguna comprobación de
             finalización de la cadena introducida por teclado.
 
@@ -47,8 +47,9 @@ def obtener_dato(mensaje, evaluar=None, comprobar=None, fin=None):
     while True:
         dato = input(mensaje).strip()
         if fin is not None and \
-           (es_iterable(fin) and str.lower(dato) in map(str.lower, fin) or \
-            not es_iterable(fin) and str.lower(dato) == str.lower(fin)):
+           (isinstance(fin, tuple) and str.lower(dato) in map(str.lower, fin) \
+            or \
+            isinstance(fin, str) and str.lower(dato) == str.lower(fin)):
             return None
 
         if evaluar is not None:
