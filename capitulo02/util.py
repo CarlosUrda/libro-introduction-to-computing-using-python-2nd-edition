@@ -5,6 +5,24 @@
 Módulo con utilidades para los ejercicios del libro.
 """
 
+import collections as collec
+import numbers as num
+
+
+def es_secuencia_numeros(objeto):
+    """
+    Comprobar si un objeto es una secuencia de números.
+
+    Argumentos:
+        objeto: objeto a comprobar si es secuencia de números.
+
+    Retorno:
+        True o False si el objeto es o no una secuencia de números.
+    """
+    return isinstance(objeto, collec.Sequence) and \
+           all((isinstance(e, num.Number) for e in objeto))
+
+
 def es_iterable(objeto):
     """
     Comprobar si un objeto es de tipo iterable
@@ -56,7 +74,10 @@ def obtener_dato(mensaje, evaluar=None, comprobar=None, fin=None):
             try:
                 dato = evaluar(dato)
             except ValueError:
-                print("ERROR: fallo al evaluar la cadena introducida.")
+                print("ERROR: valor dato erróneo al evaluar cadena introducida")
+                continue
+            except SyntaxError:
+                print("ERROR: sintaxis errónea al evaluar cadena introducida.")
                 continue
 
         if comprobar is None or comprobar(dato):
