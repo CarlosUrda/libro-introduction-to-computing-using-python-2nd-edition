@@ -1,57 +1,58 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 24 del Capítulo 02
 """
 
+from sys import path
+path.append("../")
+
+from utilidades.util import obtener_dato as leer
+from utilidades.util import cadena_a_lista
+from utilidades.util import es_subiterable
 import random
 from collections import Counter
 from collections import defaultdict
 
 
-def obtener_dato(mensaje, tipo):
-    """
-    Obtener un dato del teclado y convertirlo a un tipo concreto.
+notas_existentes = ['A', 'B', 'C', 'D', 'E', 'F']
 
-    Argumentos:
-        mensaje: mensaje a ser mostrado antes de introducir el dato por teclado.
-        tipo: tipo a ser convertida el dato de la entrada de teclado.
-    """
-    while True:
-        dato = input(mensaje).strip()
-        try:
-            dato = tipo(dato)
-        except ValueError:
-            print("ERROR: tienes que introducir un", tipo.__name__)
-        else:
-            break
-
-    return dato
 
 
 def main():
     """
     Función principal
     """
-    notas_posibles = ['A', 'B', 'C', 'D', 'E', 'F']
+    while True:
+        try:
+            notas = leer("Introduce notas [A-F] posibles separadas por comas:",\
+                         lambda x: cadena_a_lista(x, ',', 0b01101111),\
+                         lambda x: es_subiterable(x, notas_existentes), "Fin",\
+                         "Introduce una cadena de notas.",\
+                         "Introduce notas, separadas por comas, entre A-F.")
+        except EOFError:
+            print("Saliendo...")
+            break
 
-    num_notas = obtener_dato("Introduce el número de notas: ", int)
+        print("Las notas introducidas son:", notas)
 
-    num_notas_posibles = len(notas_posibles)
-    notas = [notas_posibles[random.randrange(0, num_notas_posibles)]\
-                for _ in range(num_notas)]
-    print("Notas:", notas)
+        num_notas = leer("Introduce el número de notas a generar: ", int,\
+                         lambda x: x > 0, None, "El número debe ser un entero",\
+                         "El número debe ser positivo")
 
-    frec_notas1 = defaultdict(int)
-    for nota in notas:
-        frec_notas1[nota] += 1
-    print("Frecuencia notas:", frec_notas1)
+        notas_generadas = [random.choice(notas) for _ in range(num_notas)]
+        print("Notas:", notas_generadas)
 
-    frec_notas2 = Counter(notas)
-    print(frec_notas2)
+        frec_notas1 = defaultdict(int)
+        for nota in notas_generadas:
+            frec_notas1[nota] += 1
+        print("Frecuencia notas:", frec_notas1)
 
-    print(list(zip(*sorted(frec_notas2.items()))))
+        frec_notas2 = Counter(notas_generadas)
+        print(frec_notas2)
+
+        print(list(zip(*sorted(frec_notas2.items())))[1])
 
 
 if __name__ in ("__main__", "__console__"):
