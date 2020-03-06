@@ -46,7 +46,7 @@ def es_iterable(objeto):
     #return hasattr(objeto, "__getitem__") or hasattr(objeto, "__iter__")
     try:
         iter(objeto)
-    except Exception:
+    except TypeError:
         return False
 
     return True
@@ -304,18 +304,12 @@ def obtener_dato(mensaje, convertir=None, es_correcto=None, fin=None,\
         como eval.
     """
     # Comprobación de los argumentos
-    if not isinstance(mensaje, str):
-        raise TypeError("El argumento 'mensaje' no es de tipo str")
     if convertir is not None and not callable(convertir):
         raise TypeError("El argumento 'convertir' no es una función.")
     if es_correcto is not None and not callable(es_correcto):
         raise TypeError("El argumento 'es_correcto' no es una función.")
     if fin is not None and not isinstance(fin, str):
         raise TypeError("El argumento 'fin' no es de tipo str")
-    if mens_err_conv is not None and not isinstance(mens_err_conv, str):
-        raise TypeError("El argumento 'mens_err_conv' no es de tipo str")
-    if mens_err_corr is not None and not isinstance(mens_err_corr, str):
-        raise TypeError("El argumento 'mens_err_corr' no es de tipo str")
 
     while True:
         dato = input(mensaje)
@@ -330,15 +324,13 @@ def obtener_dato(mensaje, convertir=None, es_correcto=None, fin=None,\
                 dato = convertir(dato)
         except (ValueError, TypeError) as error:
             if mens_err_conv is not None:
-                mens_err_conv = mens_err_conv.strip()
+                mens_err_conv = str(mens_err_conv).strip()
                 print("ERROR:", mens_err_conv,\
-                      '['+error+']' if mens_err_conv[-1]==':' else "")
+                      '['+error+']' if mens_err_conv[-1] == ':' else "")
             continue
 
         # Comprobación de valor de datos correctos.
-        if es_correcto is not None and not es_correcto(dato):
-            if mens_err_corr is not None:
-                print("ERROR:", mens_err_corr.strip())
-            continue
-
-        return dato
+        if es_correcto is None or es_correcto(dato):
+            return dato
+        if mens_err_corr is not None:
+            print("ERROR:", str(mens_err_corr).strip())
