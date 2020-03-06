@@ -5,18 +5,15 @@
 Ejercicio 24 del Capítulo 02
 """
 
-from sys import path
-path.append("../")
-
-from utilidades.util import obtener_dato as leer
-from utilidades.util import cadena_a_lista
-from utilidades.util import es_subiterable
 import random
 from collections import Counter
 from collections import defaultdict
+from utilidades.util import obtener_dato as leer
+from utilidades.util import cadena_a_lista
+from utilidades.util import es_subiterable
 
 
-notas_existentes = ['A', 'B', 'C', 'D', 'E', 'F']
+NOTAS_EXISTENTES = ['A', 'B', 'C', 'D', 'E', 'F']
 
 
 
@@ -28,18 +25,18 @@ def main():
         try:
             notas = leer("Introduce notas [A-F] posibles separadas por comas:",\
                          lambda x: cadena_a_lista(x, ',', 0b01101111),\
-                         lambda x: es_subiterable(x, notas_existentes), "Fin",\
+                         lambda x: es_subiterable(x, NOTAS_EXISTENTES), "Fin",\
                          "Introduce una cadena de notas.",\
                          "Introduce notas, separadas por comas, entre A-F.")
+
+            print("Las notas introducidas son:", notas)
+
+            num_notas = leer("Introduce el número de notas a generar: ", int,\
+                             lambda x: x > 0, None, "Número debe ser entero",\
+                             "El número debe ser positivo")
         except EOFError:
-            print("Saliendo...")
+            print("\n\nSaliendo...")
             break
-
-        print("Las notas introducidas son:", notas)
-
-        num_notas = leer("Introduce el número de notas a generar: ", int,\
-                         lambda x: x > 0, None, "El número debe ser un entero",\
-                         "El número debe ser positivo")
 
         notas_generadas = [random.choice(notas) for _ in range(num_notas)]
         print("Notas:", notas_generadas)
