@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 11 del Capítulo 2
@@ -9,20 +9,24 @@ def main():
     """
     Función principal.
     """
-    print(sum(range(-7, 0)))
+    print("Suma -7=>-1:", sum(range(-7, 0)))
 
-    alumnos_por_edad = {9: 17, 10: 24, 11: 21, 12: 27}
-    alumnos = suma_edades = 0
-    for edad in alumnos_por_edad:
-        alumnos += alumnos_por_edad[edad]
-        suma_edades += alumnos_por_edad[edad] * edad
-    print(suma_edades / alumnos)
 
-    print(2**-20)
+    alumnos_edad = {9: 17, 10: 24, 11: 21, 12: 27}
 
-    print(4356 // 61)
+    total_alumnos = total_edades = 0
+    for edad, alumnos in alumnos_edad.items():
+        total_alumnos += alumnos
+        total_edades += alumnos * edad
 
-    print(4356 % 61)
+    print("Media de edad:", total_edades / total_alumnos)
+
+
+    print("2^-20:", 2**-20)
+
+    print("Veces 61 en 4356:", 4356 // 61)
+
+    print("Resto 4356/61:", 4356 % 61)
 
 
 if __name__ in ("__main__", "__console__"):

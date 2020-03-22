@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 14 del Capítulo 02
@@ -10,17 +10,15 @@ def main():
     Función principal.
     """
     cad = input("Introduce una cadena: ")
-    print("Primer carácter de \"{}\" es 'g': {}".format(cad, cad[0] == 'g'))
-    print("Séptimo carácter de \"{}\" es 'g': {}".format(cad, cad[6] == 'g'))
-    print("Primeros dos caracteres de \"{}\" son 'ga': {}".\
-          format(cad, cad[0:2] == "ga"))
-    print("Penúltimo carácter de \"{}\" es 'x': {}".format(cad, cad[-2] == 'x'))
-    print("El carácter a mitad de \"{}\" es 'd': {}".\
-          format(cad, cad[len(cad)//2] == 'd'))
-    print("El primer y último carácter \"{}\" son iguales: {}".\
-          format(cad, cad[0] == cad[-1]))
-    print("Los cuatro últimos caracteres de \"{}\" son \"tion\": {}".\
-          format(cad, cad[-4:] == "tion"))
+    print(f'Primer carácter de "{cad}" es "g": {cad[0] == "g"}')
+    print(f'Séptimo carácter de "{cad}" es "g": {cad[6] == "g"}')
+    print(f'Primeros dos caracteres de "{cad}" son "ga": {cad[0:2] == "ga"}')
+    print(f'Penúltimo carácter de "{cad}" es "x": {cad[-2] == "x"}')
+    print(f'El carácter a mitad de "{cad}" es "d": {cad[len(cad)//2] == "d"}')
+    print(f'El primer y último carácter "{cad}" son iguales: '\
+          f'{cad[0] == cad[-1]}')
+    print(f'Los cuatro últimos caracteres de "{cad}" son "tion": '\
+          f'{cad[-4:] == "tion"}')
 
 
 if __name__ in ("__main__", "__console__"):

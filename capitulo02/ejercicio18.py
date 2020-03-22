@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 18 del Capítulo 02.
@@ -13,7 +13,7 @@ def main():
                "lilly of the valley"]
     print(flowers)
 
-    print("\"potato\" in {}:".format(flowers), "potato" in flowers)
+    print(f'"potato" in {flowers}:', "potato" in flowers)
 
     thorny = flowers[:3]
     print("thorny: ", thorny)
