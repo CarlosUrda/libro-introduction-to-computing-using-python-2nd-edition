@@ -1,5 +1,5 @@
 #/usr/bin/env python3
-#!coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Módulo con utilidades para los ejercicios del libro.
@@ -117,8 +117,8 @@ def eliminar_repes_inm(iterable, orden=True):
 
     Argumentos:
         - iterable: iterable con todos los elementos inmutables.
-        - orden: flag para indicar si la lista obtenida mantiene el orden de los
-        elementos del iterable original. Si obliga a mantener el orden se
+        - orden: flag para indicar si la lista obtenida mantiene el orden de
+        elementos del iterable original. Si no obliga a mantener el orden se
         ejecuta más rápido.
 
     Excepciones:
@@ -159,8 +159,9 @@ def eliminar_repes_inm(iterable, orden=True):
 
 def cadena_a_lista(cadena, separador=None, flags=0):
     """
-    Convierte una cadena con grupos de caracteres delimitados por un separador
-    a una lista donde cada elemento es cada grupo de caracteres extraído.
+    Convierte una cadena, formada por grupos de caracteres delimitados por un
+    separador, a una lista donde cada elemento es cada grupo de caracteres
+    extraído.
 
     Argumentos:
         - cadena: cadena cuyos caracteres separados por separador serán los
