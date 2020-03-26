@@ -160,15 +160,15 @@ def eliminar_repes_inm(iterable, orden=True):
 def cadena_a_lista(cadena, separador=None, flags=0):
     """
     Convierte una cadena, formada por grupos de caracteres delimitados por un
-    separador, a una lista donde cada elemento es cada grupo de caracteres
-    extraído.
+    separador (regex), a una lista donde cada elemento es cada grupo de
+    caracteres extraído.
 
     Argumentos:
         - cadena: cadena cuyos caracteres separados por separador serán los
         elementos de la lista obtenida.
-        - separador: subcadena a usar como separador de cada uno de los
-        elementos de la cadena de entrada. Si None se separan por espacios
-        eliminando estos espacios.
+        - separador: expresión regular a usar como separador de cada uno de los
+        elementos de la cadena de entrada. Si None se separan por espacios en
+        en blanco.
         - flags: bits que activan modificaciones a la lista generada:
             0bxxxxxx00: Mantener las mayúsculas y minúsculas como están.
             0bxxxxxx01: Capitalizar cada elemento de la lista resultante.
@@ -191,7 +191,7 @@ def cadena_a_lista(cadena, separador=None, flags=0):
         alrededor de cada subcadena no aparecen en cada elemento de la lista.
 
     Excepciones:
-        - ValueError si el valor de la cadena separador es incorrecto ("").
+        - ValueError si valor de la regex separador es incorrecto.
         - TypeError si los argumentos tiene un tipo de dato incorrecto.
 
     Notas:
@@ -199,13 +199,10 @@ def cadena_a_lista(cadena, separador=None, flags=0):
         opción en un argumento distinto y recibirlo como un diccionario: kargs.
         Aunque esto hay que verlo bien, es solo una sugerencia.
     """
-    # Comprobación de los argumentos
     if not isinstance(cadena, str):
-        raise TypeError("El argumento cadena no es de tipo str")
-    if separador is not None and not isinstance(separador, str):
-        raise TypeError("El argumento separador no es de tipo str")
+        raise TypeError(f"Argumento cadena {type(cadena).__name__} no es str.")
     if not isinstance(flags, int):
-        raise TypeError("El argumento flags no es de tipo int")
+        raise TypeError(f"Argumento flags {type(flags).__name__} no es int.")
 
     flags_base = {"capital": 0b01, "mayusc": 0b11, "minusc": 0b10,
                   "repet": 0b100, "invert": 0b11000, "ascen": 0b01000,
@@ -227,14 +224,20 @@ def cadena_a_lista(cadena, separador=None, flags=0):
         cadena = re.sub(rf"({separador})([^{separador}]+)",
                         lambda x: x.group(1)+x.group(2).capitalize(), cadena)
 
-    try:
-        lista = cadena.split(separador)
-    except ValueError as error:
-        raise ValueError("Valor de la cadena separador incorrecto", error)
-
-    # Eliminación de los elementos vacíos de la lista.
-    if flags & flags_base["vacio"]:
-        lista = list(filter(bool, lista))
+    # Creación de la lista y eliminación de los elementos vacíos.
+    flags_vacio = flags & flags_base["vacio"]
+    if separador is None:
+        lista = cadena.split() if flags_vacio else re.split("\s+", cadena)
+    else:
+        try:
+            lista = re.split(separador, cadena)
+        except re.error as e:
+            raise ValueError("Valor de la regex separador incorrecto", e)
+        except TypeError as e:
+            raise TypeError(f"Separador {type(separador).__name__}\
+                              debe ser tipo str", e)
+        if flags_vacio:
+            lista = list(filter(bool, lista))
 
     flags_orden = flags & flags_base["invert"]
     es_invertir = flags_orden == flags_base["invert"]
@@ -247,7 +250,7 @@ def cadena_a_lista(cadena, separador=None, flags=0):
     if es_invertir:
         lista.reverse()
     elif flags_orden:
-        lista.sort(reverse=bool(flags_base["descen"] & flags_orden))
+        lista.sort(reverse=bool(flags_base["descen"] == flags_orden))
 
     return lista
 
@@ -327,7 +330,7 @@ def obtener_dato(mensaje, convertir=None, es_correcto=None, fin=None,\
             if mens_err_conv is not None:
                 mens_err_conv = str(mens_err_conv).strip()
                 print("ERROR:", mens_err_conv,\
-                      '['+error+']' if mens_err_conv[-1] == ':' else "")
+                      error if mens_err_conv[-1] == ':' else "")
             continue
 
         # Comprobación de valor de datos correctos.
