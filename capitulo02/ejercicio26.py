@@ -5,84 +5,112 @@
 Ejercicio 26 del Capítulo 02.
 """
 
+import re
 from ast import literal_eval
-from util import es_iterable, obtener_dato
+from functools import reduce
+from utilidades.util import obtener_dato, cadena_a_lista
 
 
-def es_punto(punto):
+def cadena_a_punto(cadena):
     """
-    Comprobar si un dato es un punto en alguno de los siguientes formatos:
-    (x, y); [x, y]; {"x": x, "y", y}
-    Las coordenadas x, y pueden ser de tipo int, float o complex.
+    Convertir una cadena a una lista de coordenadas de un punto. 
 
     Argumentos:
-        punto: dato a comprobar si está en formato punto.
+        cadena: cadena de caracteres con los valores separados de las
+            coordenadas de un punto. Los valores pueden ser cualquier tipo de
+            número. Ignora cualquier carácter que no sea número, ., +, - o j.
 
     Retorno:
-        True si el dato está en formato punto.
-        False si el dato no está en formato punto.
-    """
-    if isinstance(punto, (list, tuple)):
-        if len(punto) != 2:
-            return False
-        coordenadas = punto
-    # Se hizo la comprobación para aceptar diccionario pero en la función para
-    # comprobar si está dentro del círculo es mucho lío.
-    #elif isinstance(punto, dict):
-    #    if set(punto.keys()) != {'x', 'y'}:
-    #        return False
-    #    coordenadas = punto.values()
-    else:
-        return False
+        Lista con los valores de las coordenadas convertidas a números. 
 
-    return all((isinstance(coordenada, (int, float, complex)) \
-                for coordenada in coordenadas))
+    Excepciones:
+        TypeError: argumento no tiene tipo de dato correcto => cadena = str 
+        ValueError: los números de las coordenadas en la cadena tienen un
+            formato incorrecto.
+    """
+    if not isinstance(cadena, str):
+        raise TypeError(f"Argumento cadena {type(cadena).__name__} no es str.")
+
+    punto = list(filter(bool, re.findall(r"[\d\.\+\-j]+", cadena)))
+
+    if not punto:
+        raise ValueError("Debe existir algún número como coordenada.")
+
+    try:
+        punto = list(map(literal_eval, punto))
+    except (SyntaxError, ValueError) as e:
+        raise ValueError("Formato incorrecto de números")
+
+    return punto
+  
 
 
 def es_punto_en_circulo(punto, centro, radio):
     """
-    Función que comprueba si unas coordenadas están dentro de un círculo.
+    Comprueba si las coordenadas de un punto están dentro de una circunferencia
+    o de una esfera. No hay límite en el número de coordenadas, pero deben ser
+    el mismo número para el punto y el centro.
 
     Argumentos:
-        punto: tupla o lista de dos elementos con las coordenadas (x, y) del
-            punto a comprobar.
-        centro: tupla o lista de dos elementos con las coordenadas (x, y) del
-            centro del círculo.
-        radio: número con el valor del radio de la circunferencia.
+        punto: secuencia con las coordenadas del punto a comprobar.
+        centro: secuencia con las coordenadas del centro de la circunferencia
+            o esfera.
+        radio: número con el valor del radio de la circunferencia o esfera.
 
     Retorno:
-        True si el punto está dentro de la circunferencia.
-        False si el punto está fuera de la circunferencia.
+        True/False si el punto está dentro/fuera de la circunferencia o esfera.
+
+    Excepciones:
+        TypeError: argumentos con formato incorrecto
+        ValueError: argumentos punto y centro con distinto número de coord.
     """
-    distancia2 = (punto[0] - centro[0])**2 + (punto[1] - centro[1])**2
-    return distancia2 < radio**2
+    try:
+        if len(punto) != len(centro):
+            raise ValueError("Argumentos con distino número de coordenadas.")
+       
+        distancia2 = sum(map(lambda x: (x[0]-x[1])**2, zip(punto, centro)))
+        return distancia2 < radio**2
+
+    except TypeError as e:
+        raise TypeError("Argumentos con formato incorrecto", e)
+
 
 
 def main():
     """
     Función principal.
     """
-    salir = ("salir", "fin")
-    print("PROGRAMA PARA COMPROBAR SI UN PUNTO ESTÁ EN UNA CIRCUNFERENCIA\n")
-    print("* Para salir en cualquier momento, escribe alguna:", salir)
+    print("\n*** PROGRAMA PARA COMPROBAR SI UN PUNTO ESTÁ EN UN CÍRCULO ***\n")
+    salir = "s"
+    print(f"\n(Para salir, introduce {salir} en cualquier momento)")
 
-    radio = obtener_dato("\nIntroduce el radio: ", float, fin=salir)
-    if radio is None:
+    try:
+        radio = obtener_dato("\nIntroduce el radio: ", float, fin=salir,\
+                             mens_err_conv="Debes introducir un número")
+        print("Radio:", radio)
+        centro = obtener_dato("Introduce coordenadas del centro: ",\
+                              cadena_a_punto, fin=salir,\
+                              mens_err_conv="Debes introducir un número "\
+                                  "correcto por coordenada:")
+        print("Centro:", centro)
+
+        while True:
+            punto = obtener_dato("\nIntroduce coordenadas del punto: ",\
+                                 cadena_a_punto, fin=salir,\
+                                 mens_err_conv="Debes introducir un número "\
+                                     "correcto por coordenada:")
+            print("Punto:", punto)
+
+            try:
+                esta_dentro = es_punto_en_circulo(punto, centro, radio)
+            except (ValueError, TypeError) as e:
+                print("No se puede comprobar si punto está en círculo:", e)
+            else:
+                print("\nSí" if esta_dentro else "No", "está dentro\n")
+
+    except EOFError as e:
+        print("\nSaliendo...")
         return
-
-    centro = obtener_dato("Introduce las coordenadas del centro (x, y): ", \
-                          literal_eval, es_punto, fin=salir)
-    if centro is None:
-        return
-
-    while True:
-        punto = obtener_dato("\nIntroduce coordenadas del punto (x, y): ", \
-                             literal_eval, es_punto, fin=salir)
-        if punto is None:
-            break
-
-        esta_dentro = es_punto_en_circulo(punto, centro, radio)
-        print("Está dentro" if esta_dentro else "No está dentro")
 
 
 if __name__ in ("__main__", "__console__"):
