@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -8,6 +8,7 @@ Módulo con utilidades para los ejercicios del libro.
 import collections as collec
 import numbers as num
 import re
+from ast import literal_eval
 
 
 
@@ -253,6 +254,36 @@ def cadena_a_lista(cadena, separador=None, flags=0):
         lista.sort(reverse=bool(flags_base["descen"] == flags_orden))
 
     return lista
+
+
+
+def cadena_a_lista_de_numeros(cadena):
+    """
+    Convertir una cadena a una lista de números (int, float o complex),
+    ignorando cualquier carácter que no forme parte de los números.
+
+    Argumentos:
+        cadena: cadena de caracteres con valores separados representando
+            números. Los valores están representados por un conjunto de dígitos
+            representando cualquier tipo de número. Se ignora cualquier
+            carácter que no sea dígito, ., +, - o j.
+
+    Retorno:
+        Lista con cada elemento convertido a número.
+
+    Excepciones:
+        TypeError: argumento no tiene tipo de dato correcto => cadena = str
+        ValueError: los números de la cadena tienen un formato incorrecto.
+    """
+    if not isinstance(cadena, str):
+        raise TypeError(f"Argumento cadena {type(cadena).__name__} no es str.")
+
+    lista = list(filter(bool, re.findall(r"[\d\.\+\-j]+", cadena)))
+
+    try:
+        return list(map(literal_eval, lista))
+    except (SyntaxError, ValueError) as e:
+        raise ValueError("Formato incorrecto de números")
 
 
 
