@@ -205,28 +205,28 @@ def cadena_a_lista(cadena, separador=None, flags=0):
     if not isinstance(flags, int):
         raise TypeError(f"Argumento flags {type(flags).__name__} no es int.")
 
-    flags_base = {"capital": 0b01, "mayusc": 0b11, "minusc": 0b10,
+    FLAGS_BASE = {"capital": 0b01, "mayusc": 0b11, "minusc": 0b10,
                   "repet": 0b100, "invert": 0b11000, "ascen": 0b01000,
                   "descen": 0b10000, "blanco": 0b100000, "vacio": 0b1000000}
 
     # Eliminación de los caracteres en blanco alrededor de cada elemento.
-    if flags & flags_base["blanco"]:
+    if flags & FLAGS_BASE["blanco"]:
         cadena = re.sub(rf"\s*({separador})\s*", rf"\1", cadena.strip())
 
     # Modificación de mayúsculas/minúsculas.
-    flags_case = flags & flags_base["mayusc"]
-    if flags_case == flags_base["mayusc"]:
+    flags_case = flags & FLAGS_BASE["mayusc"]
+    if flags_case == FLAGS_BASE["mayusc"]:
         cadena = cadena.upper()
-    elif flags_case == flags_base["minusc"]:
+    elif flags_case == FLAGS_BASE["minusc"]:
         cadena = cadena.lower()
-    elif flags_case == flags_base["capital"]:
+    elif flags_case == FLAGS_BASE["capital"]:
         cadena = re.sub(rf"^([^{separador}]+)",
                         lambda x: x.group(1).capitalize(), cadena)
         cadena = re.sub(rf"({separador})([^{separador}]+)",
                         lambda x: x.group(1)+x.group(2).capitalize(), cadena)
 
     # Creación de la lista y eliminación de los elementos vacíos.
-    flags_vacio = flags & flags_base["vacio"]
+    flags_vacio = flags & FLAGS_BASE["vacio"]
     if separador is None:
         lista = cadena.split() if flags_vacio else re.split("\s+", cadena)
     else:
@@ -240,24 +240,24 @@ def cadena_a_lista(cadena, separador=None, flags=0):
         if flags_vacio:
             lista = list(filter(bool, lista))
 
-    flags_orden = flags & flags_base["invert"]
-    es_invertir = flags_orden == flags_base["invert"]
+    flags_orden = flags & FLAGS_BASE["invert"]
+    es_invertir = flags_orden == FLAGS_BASE["invert"]
 
     # Eliminación de las repeticiones de los elementos
-    if flags & flags_base["repet"]:
+    if flags & FLAGS_BASE["repet"]:
         lista = eliminar_repes_inm(lista, es_invertir or not flags_orden)
 
     # Modificación del orden de los elementos en la lista.
     if es_invertir:
         lista.reverse()
     elif flags_orden:
-        lista.sort(reverse=bool(flags_base["descen"] == flags_orden))
+        lista.sort(reverse=bool(FLAGS_BASE["descen"] == flags_orden))
 
     return lista
 
 
 
-def cadena_a_lista_de_numeros(cadena):
+def cadena_a_lista_de_numeros(cadena, flags=0):
     """
     Convertir una cadena a una lista de números (int, float o complex),
     ignorando cualquier carácter que no forme parte de los números.
@@ -267,6 +267,16 @@ def cadena_a_lista_de_numeros(cadena):
             números. Los valores están representados por un conjunto de dígitos
             representando cualquier tipo de número. Se ignora cualquier
             carácter que no sea dígito, ., +, - o j.
+        flags: bits que activan modificaciones a la lista generada:
+            0bxxxxxxx0: Mantener las repeticiones de elementos en la lista.
+            0bxxxxxxx1: Eliminar las repeticiones de elementos en la lista.
+            0bxxxxx00x: No ordenar los elementos de la lista.
+            0bxxxxx01x: Ordenar los elementos de la lista en orden ascendente.
+            0bxxxxx10x: Ordenar los elementos de la lista en orden descendente.
+            0bxxxxx11x: Invertir el orden inicial de los elementos de la lista.
+            0bxxxx0xxx: Mantener valores 0.
+            0bxxxx1xxx: Eliminar valores 0. 
+
 
     Retorno:
         Lista con cada elemento convertido a número.
@@ -274,16 +284,42 @@ def cadena_a_lista_de_numeros(cadena):
     Excepciones:
         TypeError: argumento no tiene tipo de dato correcto => cadena = str
         ValueError: los números de la cadena tienen un formato incorrecto.
+
+    Mejoras:
+        Se pueden añadir opciones como eliminar duplicados, ordenar la lista o
+        eliminar los valores 0.
     """
     if not isinstance(cadena, str):
         raise TypeError(f"Argumento cadena {type(cadena).__name__} no es str.")
+    if not isinstance(flags, int):
+        raise TypeError(f"Argumento flags {type(flags).__name__} no es int.")
 
-    lista = list(filter(bool, re.findall(r"[\d\.\+\-j]+", cadena)))
+    FLAGS_BASE = {"repet": 0b1, "invert": 0b110, "ascen": 0b010,
+                  "descen": 0b100, "ceros": 0b1000}
 
     try:
-        return list(map(literal_eval, lista))
+        lista = list(map(literal_eval, re.findall(r"[\d\.\+\-j]+", cadena)))
     except (SyntaxError, ValueError) as e:
         raise ValueError("Formato incorrecto de números")
+   
+    flags_orden = flags & FLAGS_BASE["invert"]
+    es_invertir = flags_orden == FLAGS_BASE["invert"]
+
+    # Eliminación de elementos duplicados.
+    if flags & FLAGS_BASE["repet"]:
+        lista = eliminar_repes_inm(lista, es_invertir or not flags_orden)
+
+    # Eliminación de valores 0.
+    if flags & FLAGS_BASE["ceros"]:
+        lista = list(filter(bool, lista))
+
+    # Ordenación de los elementos.
+    if es_invertir:
+        lista.reverse()
+    elif flags_orden:
+        lista.sort(reverse=bool(FLAGS_BASE["descen"] == flags_orden))
+
+    return lista
 
 
 
