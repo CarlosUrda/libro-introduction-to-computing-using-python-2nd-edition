@@ -1,42 +1,43 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 31 del Capítulo 02.
 """
 
-from ast import literal_eval
-import util
+import utilidades.util as u
 
 
 def main():
     """
     Función principal.
     """
-    lista = util.obtener_dato("Introduce la lista: ", literal_eval,\
-                              lambda x: isinstance(x, list), ("fin", "salir"))
-    if lista is None:
-        print("Saliendo...")
-        return
+    salir = "s"
+    print(f"\n(Para salir, introduce {salir} en cualquier momento)")
 
-    print("Lista inicial:", lista)
+    try:
+        lista = u.obtener_dato("\nIntroduce la lista de números: ",\
+                               u.cadena_a_lista_de_numeros, fin=salir)
+        print("Lista inicial:", lista)
 
-    lista_aux = util.obtener_dato("Introduce la lista aux: ", literal_eval,\
-                                lambda x: isinstance(x, list), ("fin", "salir"))
-    if lista_aux is None:
+        lista_aux = u.obtener_dato("Introduce la lista aux: ",\
+                                   u.cadena_a_lista_de_numeros, fin=salir)
+        print("Lista auxiliar:", lista_aux)
+
+    except EOFError:
         print("Saliendo...")
         return
 
     lista.extend(lista_aux)
-    print("lista.extend({}) => {}".format(lista_aux, lista))
+    print(f"lista.extend({lista_aux}) => {lista}")
 
     lista_copy = lista.copy()
-    print("lista.copy() => {}".format(lista_copy))
+    print(f"lista.copy() => {lista_copy}")
 
     lista.clear()
-    print("lista.clear() => {}".format(lista))
+    print(f"lista.clear() => {lista}")
 
-    print("lista copiada => {}".format(lista_copy))
+    print(f"lista copiada => {lista_copy}")
 
 if __name__ in ("__main__", "__console__"):
     main()

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 30 del Capítulo 02.
 """
 
-import util
+import utilidades.util as u
 
 
 def main():
     """
     Función principal.
     """
-    cadena = util.obtener_dato("Introduce la cadena: ")
+    cadena = u.obtener_dato("Introduce la cadena: ")
     print("Cadena introducida:", cadena)
 
     lista = list(cadena)

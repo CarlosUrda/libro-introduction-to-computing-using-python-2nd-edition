@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 28 del Capítulo 02
 """
 
-from ast import literal_eval
-import util
+import utilidades.util as u
 
 
 def main():
     """
     Función principal
     """
-    lista = util.obtener_dato("Introduce la lista de números: ", literal_eval,\
-                              util.es_secuencia_numeros, ("salir", "fin"))
-    if lista is None:
-        print("Saliendo...")
+
+    salir = "s"
+    print(f"\n(Para salir, introduce {salir} en cualquier momento)")
+
+    try:
+        lista = u.obtener_dato("\nIntroduce la lista de números: ",\
+                               u.cadena_a_lista_de_numeros, bool, salir,\
+                               "Debes introducir números en formato corecto.",\
+                               "Debes introducir algún número.")
+    except EOFError as e:
+        print("\nSaliendo...")
         return
 
     indice_medio = len(lista) // 2

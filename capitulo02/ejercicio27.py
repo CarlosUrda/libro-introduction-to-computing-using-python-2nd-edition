@@ -1,33 +1,40 @@
 #!/usr/bin/env python3
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Ejercicio 27 del Capítulo 02.
 """
 
-import math as m
-from util import obtener_dato
+import math 
+from utilidades.util import obtener_dato
 
 
 def main():
     """
     Función principal.
     """
-    angulo = obtener_dato("Introduce el ángulo de la escalera con el suelo: ",\
-                          float, lambda x: 0 <= x <= 90, ("salir", "fin"))
-    if angulo is None:
-        print("Saliendo...")
-        return
+    print("\n*** PROGRAMA PARA CALCULAR LA ALTURA DE UNA ESCALERA ***\n")
+    salir = "s"
+    print(f"\n(Para salir, introduce {salir} en cualquier momento)")
 
-    longitud = obtener_dato("Introduce la longitud de la escalera: ", float,\
-                            lambda x: x >= 0, ("salir", "fin"))
-    if longitud is None:
-        print("Saliendo...")
-        return
+    while True:
+        try:
+            angulo = obtener_dato("\nIntroduce ángulo de escalera y suelo: ",\
+                                  float, lambda x: 0 <= x <= 90, salir,\
+                                  "Debes introducir un número.",\
+                                  "El ángulo debe ser entre 0 y 90 grados.")
 
-    radianes = m.pi * angulo / 180
-    altura = m.sin(radianes) * longitud
-    print("La altura de la escalera es: ", altura)
+            longitud = obtener_dato("\nIntroduce longitud de la escalera: ",\
+                                    float, lambda x: x >= 0, salir,\
+                                    "Debes introducir un número.",\
+                                    "La longitud debe ser >= 0.")
+        except EOFError:
+            print("\nSaliendo...")
+            return
+
+        radianes = math.pi * angulo / 180
+        altura = math.sin(radianes) * longitud
+        print("La altura de la escalera es: ", altura)
 
 
 if __name__ in ("__main__", "__console__"):
